@@ -30,5 +30,11 @@ class DriverBasic extends Model
         'view',
         'is_status'
     ];
+    
+       // Cast latitude and longitude to float
+       protected $casts = [
+        'latitude' => 'float',
+        'longitude' => 'float',
+    ];
 
 }

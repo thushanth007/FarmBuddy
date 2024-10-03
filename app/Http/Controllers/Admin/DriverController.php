@@ -22,7 +22,7 @@ class DriverController extends Controller
     {
         $this->middleware('auth:admin');
     }
-    
+
     public function get_driver_dashboard()
     {
         $id = $this->authAdmin()->id;
@@ -81,7 +81,7 @@ class DriverController extends Controller
 
         return redirect()->back()->with('success', 'Order status has been updated');
     }
-    
+
     public function update_delivered($id)
     {
         $order = Order::find($id);
@@ -142,7 +142,7 @@ class DriverController extends Controller
             } catch (\Exception $e) {
                 return $e->getMessage();
             }
-    
+
             return redirect('admin/driver-order/'.$request->order_id.'/view')->with('success', 'Order status has been updated');
         }
         return redirect('admin/driver-order')->with('error', 'Sorry! Someone has already accepted this request');
@@ -155,11 +155,18 @@ class DriverController extends Controller
 
     public function post_driver_location(Request $request)
     {
+        $request->validate([
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+
         $id = $this->authAdmin()->id;
         $driver = DriverBasic::where('admin_id', $id)->first();
         $driver->latitude = $request->latitude;
         $driver->longitude = $request->longitude;
         $driver->save();
+
+        \Log::info('Updated location:', ['admin_id' => $id, 'latitude' => $driver->latitude, 'longitude' => $driver->longitude]);
 
         return redirect()->back()->with('success', 'Driver location has been updated');
     }

@@ -27,7 +27,7 @@ class SellerController extends Controller
     {
         $this->middleware('auth:admin');
     }
-    
+
     public function get_seller_dashboard()
     {
         $id = $this->authAdmin()->id;
@@ -110,7 +110,7 @@ class SellerController extends Controller
                 $request->driver_id = $dr->admin_id;
                 $request->save();
 
-                
+
                 try {
                     Mail::to($dr->email)->send(new DriverRequestMail($request, $dr, $farmer));
                 } catch (\Exception $e) {
@@ -155,11 +155,18 @@ class SellerController extends Controller
 
     public function post_seller_location(Request $request)
     {
+        $request->validate([
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+
         $id = $this->authAdmin()->id;
         $farmer = FarmersBasic::where('admin_id', $id)->first();
         $farmer->latitude = $request->latitude;
         $farmer->longitude = $request->longitude;
         $farmer->save();
+
+        \Log::info('Updated location:', ['admin_id' => $id, 'latitude' => $farmer->latitude, 'longitude' => $farmer->longitude]);
 
         return redirect()->back()->with('success', 'Farmer location has been updated');
     }
