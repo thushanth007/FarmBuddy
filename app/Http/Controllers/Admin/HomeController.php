@@ -29,7 +29,7 @@ class HomeController extends Controller
             return redirect('admin/seller-dashboard');
         } elseif($this->authAdmin()->user_type == 'driver') {
             return redirect('admin/driver-dashboard');
-        }
+        } 
 
         $order = Order::count();
         $users = User::count();

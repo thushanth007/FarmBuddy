@@ -199,19 +199,19 @@
                                         <h4>Guaranteed Safe Checkout</h4>
                                     </div>
                                     <ul>
-                                        <li>
+                                        {{-- <li>
                                             <a href="javascript:void(0)">
                                                 <img src="https://themes.pixelstrap.com/fastkart/assets/images/product/payment/1.svg"
                                                     class="blur-up lazyload" alt="">
                                             </a>
-                                        </li>
+                                        </li> --}}
                                         <li>
                                             <a href="javascript:void(0)">
                                                 <img src="https://themes.pixelstrap.com/fastkart/assets/images/product/payment/2.svg"
                                                     class="blur-up lazyload" alt="">
                                             </a>
                                         </li>
-                                        <li>
+                                        {{-- <li>
                                             <a href="javascript:void(0)">
                                                 <img src="https://themes.pixelstrap.com/fastkart/assets/images/product/payment/3.svg"
                                                     class="blur-up lazyload" alt="">
@@ -228,7 +228,7 @@
                                                 <img src="https://themes.pixelstrap.com/fastkart/assets/images/product/payment/5.svg"
                                                     class="blur-up lazyload" alt="">
                                             </a>
-                                        </li>
+                                        </li> --}}
                                     </ul>
                                 </div>
                             </div>
@@ -678,8 +678,8 @@
                             </select>
                         </div>
                         <div class="review-box">
-                            <label for="content" class="form-label">Your Question *</label>
-                            <textarea id="content" name="review" rows="3" class="form-control" placeholder="Your Question"></textarea>
+                            <label for="content" class="form-label">Your Comment *</label>
+                            <textarea id="content" name="review" rows="3" class="form-control" placeholder="Your Comment"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">

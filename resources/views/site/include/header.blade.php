@@ -266,13 +266,17 @@
                                         <a class="nav-menu" href="{{url('/product/shop')}}">Shop</a>
                                     </li>
 
+                                    @if (!Auth::check())
                                     <li class="nav-item">
                                         <a class="nav-menu" href="{{url('/seller-register')}}">Become a Seller</a>
                                     </li>
+                                    @endif
 
+                                    @if (!Auth::check())
                                     <li class="nav-item">
                                         <a class="nav-menu" href="{{url('/driver-register')}}">Become a Driver</a>
                                     </li>
+                                    @endif
 
                                     <li class="nav-item">
                                         <a class="nav-menu" href="{{url('/contact-us')}}">Contact</a>

@@ -18,9 +18,19 @@ class RedirectIfAuthenticated
     public function handle($request, Closure $next, $guard = null)
     {
         switch ($guard) {
-            case 'admin' :
+            case 'admin':
                 if (Auth::guard($guard)->check()) {
                     return redirect()->route('admin.home');
+                }
+                break;
+            case 'seller':
+                if (Auth::guard($guard)->check()) {
+                    return redirect()->route('seller.dashboard');
+                }
+                break;
+            case 'driver':
+                if (Auth::guard($guard)->check()) {
+                    return redirect()->route('driver.dashboard');
                 }
                 break;
             default:
@@ -30,6 +40,6 @@ class RedirectIfAuthenticated
                 break;
         }
 
-        return $next($request);
+        return $next($request);  // This is important to pass the request to the next middleware or controller
     }
 }

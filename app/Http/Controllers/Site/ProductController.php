@@ -15,7 +15,7 @@ class ProductController extends Controller
 {
     public function get_shop(Request $request) {
 
-        $farms = FarmersBasic::select('farmers_basic.*', DB::raw('COALESCE(AVG(review.rating), 0) as average_rating'))
+        $farms = FarmersBasic::select('farmers_basic.*', DB::raw('COALESCE(AVG(review.rating), 0) as average_rating'), DB::raw('COUNT(DISTINCT product.id) as product_count'))
                 ->leftJoin('product', 'farmers_basic.admin_id', '=', 'product.admin_id')
                 ->leftJoin('review', 'product.id', '=', 'review.product_id')
                 ->groupBy('farmers_basic.id')
@@ -55,7 +55,7 @@ class ProductController extends Controller
                 ->limit(4)
                 ->select('id', 'name', 'price', 'unit', 'offer', 'image_1')
                 ->get();
-       
+
         $related = Product::where('admin_id', $product->admin_id)
                 ->where('is_status', 1)
                 ->orderBy('id', 'DESC')
@@ -66,7 +66,7 @@ class ProductController extends Controller
                 ->get();
 
         $review = Review::where('product_id', $id)->orderBy('id', 'DESC')->get();
-        
+
         $averageRating = Review::where('product_id', $id)->avg('rating');
         $averageRating = number_format($averageRating, 0);
         $rating1 = Review::where('product_id', $id)->where('rating', 1)->count();

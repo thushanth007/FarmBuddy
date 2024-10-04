@@ -96,7 +96,7 @@
                                         </ul>
                                         <h6 class="theme-color ms-2">({{round($f->average_rating, 1)}})</h6>
                                     </div>
-                                    <span class="product-label">3 Products</span>
+                                    <span class="product-label">{{ $f->product_count }} Products</span>
                                 </div>
 
                                 <div class="grid-image">

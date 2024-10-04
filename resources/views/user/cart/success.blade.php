@@ -65,7 +65,7 @@
 
                             <div class="order-contain">
                                 <h3 class="theme-color">Order Success</h3>
-                                <h5 class="text-content">Order Is Successfully And Your Order Is On The Way</h5>
+                                <h5 class="text-content">Order Is Successfull And Your Order will reach you soon!</h5>
                             </div>
                         </div>
                     </div>

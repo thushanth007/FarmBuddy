@@ -12,7 +12,7 @@
 */
 
 #User
-Route::get('user/dashboard', 'User\DashboardController@get_dashboard');
+Route::get('user/dashboard', 'User\DashboardController@get_dashboard')->name('user.dashboard');;
 Route::post('user/update', 'User\DashboardController@update_profile');
 
 # Checkout

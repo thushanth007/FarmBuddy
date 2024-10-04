@@ -16,6 +16,9 @@ Route::get('/user-login', 'Site\AccountController@get_login')->name('user-login'
 Route::get('/user-register', 'Site\AccountController@get_user_register');
 Route::post('/user-register', 'Site\AccountController@post_user_register');
 
+# User logout
+Route::post('/logout', 'Auth\LoginController@logout')->name('logout');  // This handles regular user logout
+
 # Seller
 Route::get('/seller-register', 'Site\SellerController@get_seller_register');
 Route::post('/seller-register', 'Site\SellerController@post_seller_register');
@@ -46,8 +49,25 @@ Route::get('wishlist/add/{id}', 'Site\CartController@addToWishlist');
 Route::get('wishlist/remove/{id}', 'Site\CartController@removeWishlistItem');
 
 #Admin-Login
+// Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
+//     Route::get('/login', 'Auth\AdminLoginController@showLoginForm')->name('login');
+//     Route::post('/login', 'Auth\AdminLoginController@login')->name('login.submit');
+//     Route::post('/logout', 'Auth\AdminLoginController@logout')->name('logout');
+// });
+
+
+
+# Admin Routes
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth:admin']], function () {
+    Route::get('/dashboard', 'Admin\AdminController@dashboard')->name('dashboard');
+    Route::get('/seller-dashboard', 'Admin\AdminController@sellerDashboard')->name('seller.dashboard');
+    Route::get('/driver-dashboard', 'Admin\AdminController@driverDashboard')->name('driver.dashboard');
+});
+
+# Admin login/logout routes (don't require authentication middleware)
 Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/login', 'Auth\AdminLoginController@showLoginForm')->name('login');
     Route::post('/login', 'Auth\AdminLoginController@login')->name('login.submit');
     Route::post('/logout', 'Auth\AdminLoginController@logout')->name('logout');
 });
+
