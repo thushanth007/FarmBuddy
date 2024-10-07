@@ -125,7 +125,7 @@
   ]);
 
   const options = {
-    title:'Farmers Sale Processing Chart'
+    title:'Sales Breakdown by Day (Including Driver Payments)'
   };
 
   const chart = new google.visualization.PieChart(document.getElementById('saleChart'));
@@ -159,7 +159,7 @@
       legend: {display: false},
       title: {
         display: true,
-        text: "Customers Order Chart"
+        text: "Daily Customer Orders"
       }
     }
   });
@@ -191,7 +191,7 @@
       legend: {display: false},
       title: {
         display: true,
-        text: "Customers Order Chart"
+        text: "Daily Sales (Including Driver Payments)"
       }
     }
   });

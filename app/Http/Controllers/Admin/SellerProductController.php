@@ -25,7 +25,9 @@ class SellerProductController extends Controller
 
     public function index()
     {
-        $data = Product::orderBy('id', 'DESC')->paginate(10);
+        $data = Product::where('admin_id', $this->authAdmin()->id) // Filter by logged-in seller
+        ->orderBy('id', 'DESC')
+        ->paginate(10);
 
         return view('admin.product.index', compact('data'));
     }

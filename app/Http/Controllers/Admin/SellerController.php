@@ -32,18 +32,50 @@ class SellerController extends Controller
     {
         $id = $this->authAdmin()->id;
 
-        $sales = Order::where('farmer_id', $id)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('total');
+        // $sales = Order::where('farmer_id', $id)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('total');
+        $sales = Order::where('farmer_id', $id)
+            ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+            ->sum(DB::raw('total - driver_payment'));
         $order = Order::where('farmer_id', $id)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
         $product = Product::where('admin_id', $id)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
         $review = Review::join('product', 'review.product_id', '=', 'product.id')->where('product.admin_id', $id)->whereBetween('review.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
 
-        $monOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek())->count();
-        $tueOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(1))->count();
-        $wedOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(2))->count();
-        $thuOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(3))->count();
-        $friOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(4))->count();
-        $satOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(5))->count();
-        $sunOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(6))->count();
+        $monOrder = Order::where('farmer_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek())
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
+        $tueOrder = Order::where('farmer_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(1))
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
+        $wedOrder = Order::where('farmer_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(2))
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
+        $thuOrder = Order::where('farmer_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(3))
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
+        $friOrder = Order::where('farmer_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(4))
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
+        $satOrder = Order::where('farmer_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(5))
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
+        $sunOrder = Order::where('farmer_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(6))
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
+
+        // $monOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek())->count();
+        // $tueOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(1))->count();
+        // $wedOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(2))->count();
+        // $thuOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(3))->count();
+        // $friOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(4))->count();
+        // $satOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(5))->count();
+        // $sunOrder = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(6))->count();
 
         $monSale = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek())->sum('total');
         $tueSale = Order::where('farmer_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(1))->sum('total');
@@ -55,9 +87,27 @@ class SellerController extends Controller
 
         $location = FarmersBasic::where('admin_id', $id)->first();
 
-        return view('admin.seller.dashboard', compact('sales', 'order', 'product', 'review',
-            'monOrder', 'tueOrder', 'wedOrder', 'thuOrder', 'friOrder', 'satOrder', 'sunOrder',
-            'monSale', 'tueSale', 'wedSale', 'thuSale', 'friSale', 'satSale', 'sunSale', 'location'));
+        return view('admin.seller.dashboard', compact(
+            'sales',
+            'order',
+            'product',
+            'review',
+            'monOrder',
+            'tueOrder',
+            'wedOrder',
+            'thuOrder',
+            'friOrder',
+            'satOrder',
+            'sunOrder',
+            'monSale',
+            'tueSale',
+            'wedSale',
+            'thuSale',
+            'friSale',
+            'satSale',
+            'sunSale',
+            'location'
+        ));
     }
 
     public function get_seller_category()
@@ -89,7 +139,7 @@ class SellerController extends Controller
         $order->order_confirmed = 1;
         $order->save();
 
-        if($order->delivery_option == 'Express Delivery') {
+        if ($order->delivery_option == 'Express Delivery') {
             $farmer = FarmersBasic::where('admin_id', $order->farmer_id)->first();
 
             $driver = DriverBasic::select(DB::raw("*,
@@ -98,7 +148,7 @@ class SellerController extends Controller
                     * cos( radians( longitude ) - radians($farmer->longitude) )
                     + sin( radians($farmer->latitude) )
                     * sin( radians( latitude ) ) ) ) AS distance"))
-                    ->orderBy('distance', 'asc')
+                ->orderBy('distance', 'asc')
                 ->limit(3)
                 ->get();
 

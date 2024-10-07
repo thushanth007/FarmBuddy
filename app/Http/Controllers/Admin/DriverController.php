@@ -32,13 +32,42 @@ class DriverController extends Controller
         $pending = Order::where('driver_id', $id)->where('delivered', 0)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
         $complete = Order::where('driver_id', $id)->where('delivered', 1)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
 
-        $monOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek())->count();
-        $tueOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(1))->count();
-        $wedOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(2))->count();
-        $thuOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(3))->count();
-        $friOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(4))->count();
-        $satOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(5))->count();
-        $sunOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(6))->count();
+        // $monOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek())->count();
+        // $tueOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(1))->count();
+        // $wedOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(2))->count();
+        // $thuOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(3))->count();
+        // $friOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(4))->count();
+        // $satOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(5))->count();
+        // $sunOrder = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(6))->count();
+
+        $monOrder = Order::where('driver_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek())
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
+        $tueOrder = Order::where('driver_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(1))
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
+        $wedOrder = Order::where('driver_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(2))
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
+        $thuOrder = Order::where('driver_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(3))
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
+        $friOrder = Order::where('driver_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(4))
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
+        $satOrder = Order::where('driver_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(5))
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
+        $sunOrder = Order::where('driver_id', $id)
+            ->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(6))
+            ->selectRaw('SUM(total - driver_payment) as total_sales')
+            ->value('total_sales');
 
         $monSale = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek())->sum('driver_payment');
         $tueSale = Order::where('driver_id', $id)->whereDate('created_at', Carbon::now()->startOfWeek()->addDay(1))->sum('driver_payment');
@@ -50,9 +79,27 @@ class DriverController extends Controller
 
         $location = DriverBasic::where('admin_id', $id)->first();
 
-        return view('admin.driver.dashboard', compact('sales', 'order', 'pending', 'complete',
-            'monOrder', 'tueOrder', 'wedOrder', 'thuOrder', 'friOrder', 'satOrder', 'sunOrder',
-            'monSale', 'tueSale', 'wedSale', 'thuSale', 'friSale', 'satSale', 'sunSale', 'location'));
+        return view('admin.driver.dashboard', compact(
+            'sales',
+            'order',
+            'pending',
+            'complete',
+            'monOrder',
+            'tueOrder',
+            'wedOrder',
+            'thuOrder',
+            'friOrder',
+            'satOrder',
+            'sunOrder',
+            'monSale',
+            'tueSale',
+            'wedSale',
+            'thuSale',
+            'friSale',
+            'satSale',
+            'sunSale',
+            'location'
+        ));
     }
 
     public function get_driver_order()
@@ -103,9 +150,9 @@ class DriverController extends Controller
     {
         $id = $this->authAdmin()->id;
         $request = DriverRequest::where('driver_reference', $reference)->first();
-        $verification = DriverRequest::where('order_id', $request->order_id)->where('is_status' , 1)->count('id');
+        $verification = DriverRequest::where('order_id', $request->order_id)->where('is_status', 1)->count('id');
 
-        if($id == $request->driver_id && $verification == 0) {
+        if ($id == $request->driver_id && $verification == 0) {
             $singleData = Order::find($request->order_id);
             $data = OrderProduct::where('order_id', $singleData->id)->orderBy('id', 'DESC')->paginate(10);
             $user = Basic::where('user_id', $singleData->user_id)->first();
@@ -120,13 +167,13 @@ class DriverController extends Controller
 
     public function get_driver_accept($reference)
     {
-        $request = DriverRequest::where('driver_reference', $reference)->where('is_status' , 0)->first();
-        if(!$request) {
+        $request = DriverRequest::where('driver_reference', $reference)->where('is_status', 0)->first();
+        if (!$request) {
             return redirect('admin/driver-order')->with('error', 'Sorry! Request not found');
         }
 
-        $verification = DriverRequest::where('order_id', $request->order_id)->where('is_status' , 1)->first();
-        if(!$verification) {
+        $verification = DriverRequest::where('order_id', $request->order_id)->where('is_status', 1)->first();
+        if (!$verification) {
             $request->is_status = 1;
             $request->save();
 
@@ -143,7 +190,7 @@ class DriverController extends Controller
                 return $e->getMessage();
             }
 
-            return redirect('admin/driver-order/'.$request->order_id.'/view')->with('success', 'Order status has been updated');
+            return redirect('admin/driver-order/' . $request->order_id . '/view')->with('success', 'Order status has been updated');
         }
         return redirect('admin/driver-order')->with('error', 'Sorry! Someone has already accepted this request');
     }
