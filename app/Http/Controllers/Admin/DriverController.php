@@ -148,6 +148,61 @@ class DriverController extends Controller
 
     public function get_driver_request($reference)
     {
+        // $id = $this->authAdmin()->id;
+        // $request = DriverRequest::where('driver_reference', $reference)->first();
+        // $verification = DriverRequest::where('order_id', $request->order_id)->where('is_status', 1)->count('id');
+
+        // if ($id == $request->driver_id && $verification == 0) {
+        //     $singleData = Order::find($request->order_id);
+        //     $data = OrderProduct::where('order_id', $singleData->id)->orderBy('id', 'DESC')->paginate(10);
+        //     $user = Basic::where('user_id', $singleData->user_id)->first();
+        //     $farmer = FarmersBasic::where('admin_id', $singleData->farmer_id)->first();
+
+        //     return view('admin.driver.order_status', compact('singleData', 'data', 'user', 'farmer', 'request', 'verification'));
+        // } else {
+        //     return redirect('admin/driver-order')->with('error', 'Sorry! Someone has already accepted this request');
+        // }
+
+
+
+        // $id = $this->authAdmin()->id;
+        // $request = DriverRequest::where('driver_reference', $reference)->first();
+        // $verification = DriverRequest::where('order_id', $request->order_id)->where('is_status', 1)->count('id');
+
+        // if ($id == $request->driver_id && $verification == 0) {
+        //     $singleData = Order::find($request->order_id);
+        //     $data = OrderProduct::where('order_id', $singleData->id)->orderBy('id', 'DESC')->paginate(10);
+
+        //     // Get customer's location from the Basic table
+        //     $user = Basic::where('user_id', $singleData->user_id)->first();
+        //     $customerLatitude = $user->latitude;
+        //     $customerLongitude = $user->longitude;
+
+        //     // Get farmer details from FarmersBasic table
+        //     $farmer = FarmersBasic::where('admin_id', $singleData->farmer_id)->first();
+
+        //     // Get driver's location from the DriverBasic table
+        //     $driver = DriverBasic::where('admin_id', $request->driver_id)->first();
+        //     $driverLatitude = $driver->latitude;
+        //     $driverLongitude = $driver->longitude;
+
+        //     // Check if the farmer details are available
+        //     if (!$farmer) {
+        //         return redirect('admin/driver-order')->with('error', 'Farmer details not found.');
+        //     }
+
+        //     // Generate Google Maps link for navigation (driver to customer)
+        //     if (!empty($driverLatitude) && !empty($driverLongitude) && !empty($customerLatitude) && !empty($customerLongitude)) {
+        //         $googleMapsLink = "https://www.google.com/maps/dir/{$driverLatitude},{$driverLongitude}/{$customerLatitude},{$customerLongitude}";
+        //     } else {
+        //         $googleMapsLink = null; // No valid link if any coordinates are missing
+        //     }
+
+        //     return view('admin.driver.order_status', compact('singleData', 'data', 'user', 'driver', 'farmer', 'request', 'verification', 'googleMapsLink'));
+        // } else {
+        //     return redirect('admin/driver-order')->with('error', 'Sorry! Someone has already accepted this request');
+        // }
+
         $id = $this->authAdmin()->id;
         $request = DriverRequest::where('driver_reference', $reference)->first();
         $verification = DriverRequest::where('order_id', $request->order_id)->where('is_status', 1)->count('id');
@@ -155,10 +210,42 @@ class DriverController extends Controller
         if ($id == $request->driver_id && $verification == 0) {
             $singleData = Order::find($request->order_id);
             $data = OrderProduct::where('order_id', $singleData->id)->orderBy('id', 'DESC')->paginate(10);
-            $user = Basic::where('user_id', $singleData->user_id)->first();
-            $farmer = FarmersBasic::where('admin_id', $singleData->farmer_id)->first();
 
-            return view('admin.driver.order_status', compact('singleData', 'data', 'user', 'farmer', 'request', 'verification'));
+            // Get customer's location from the Basic table
+            $user = Basic::where('user_id', $singleData->user_id)->first();
+            $customerLatitude = $user->latitude;
+            $customerLongitude = $user->longitude;
+
+            // Get farmer details from FarmersBasic table
+            $farmer = FarmersBasic::where('admin_id', $singleData->farmer_id)->first();
+            $farmerLatitude = $farmer->latitude;
+            $farmerLongitude = $farmer->longitude;
+
+            // Get driver's location from the DriverBasic table
+            $driver = DriverBasic::where('admin_id', $request->driver_id)->first();
+            $driverLatitude = $driver->latitude;
+            $driverLongitude = $driver->longitude;
+
+            // Check if the farmer details are available
+            if (!$farmer) {
+                return redirect('admin/driver-order')->with('error', 'Farmer details not found.');
+            }
+
+            // Generate Google Maps link for navigation from driver to customer
+            if (!empty($driverLatitude) && !empty($driverLongitude) && !empty($customerLatitude) && !empty($customerLongitude)) {
+                $googleMapsLinkToCustomer = "https://www.google.com/maps/dir/{$driverLatitude},{$driverLongitude}/{$customerLatitude},{$customerLongitude}";
+            } else {
+                $googleMapsLinkToCustomer = null;
+            }
+
+            // Generate Google Maps link for navigation from driver to farmer
+            if (!empty($driverLatitude) && !empty($driverLongitude) && !empty($farmerLatitude) && !empty($farmerLongitude)) {
+                $googleMapsLinkToFarmer = "https://www.google.com/maps/dir/{$driverLatitude},{$driverLongitude}/{$farmerLatitude},{$farmerLongitude}";
+            } else {
+                $googleMapsLinkToFarmer = null;
+            }
+
+            return view('admin.driver.order_status', compact('singleData', 'data', 'user', 'driver', 'farmer', 'request', 'verification', 'googleMapsLinkToCustomer', 'googleMapsLinkToFarmer'));
         } else {
             return redirect('admin/driver-order')->with('error', 'Sorry! Someone has already accepted this request');
         }
