@@ -23,5 +23,4 @@ Route::get('user/payment-cancel', 'User\CartController@show_cancel')->name('paym
 
 # Wish List
 Route::get('wishlist/remove/{id}', 'User\DashboardController@removeWishlistItem');
-
 Route::post('user-location', 'User\UserController@post_user_location');
