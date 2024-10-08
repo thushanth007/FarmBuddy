@@ -62,6 +62,6 @@ class DriverController extends Controller
             return $e->getMessage();
         }
 
-        return redirect('driver-register')->with('info', 'You have successfully registered. Check it your Email for further instructions.');
+        return redirect('driver-register')->with('info', 'You have successfully registered. Check your Email for further instructions.');
     }
 }
