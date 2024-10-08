@@ -4,7 +4,7 @@
     Farm Buddy - Best Price On The Market
 @endsection
 @section('description')
-    We are a friendly bar serving a variety of cocktails, wines and beeRs.Our bar is a perfect place for a couple.
+"We are a user-friendly platform connecting farmers directly with consumers, offering a variety of fresh produce, dairy, and farm products."
 @endsection
 
 @section('content')

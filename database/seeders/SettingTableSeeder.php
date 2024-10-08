@@ -18,7 +18,7 @@ class SettingTableSeeder extends Seeder
         DB::table('setting')->insert([
             'name'  => 'Farm Buddy',
             'title' => 'Farm Buddy',
-            'description' => 'We are a friendly bar serving a variety of cocktails, wines and beers. Our bar is a perfect place for a couple.',
+            'description' => '"We are a user-friendly platform connecting farmers directly with consumers, offering a variety of fresh produce, dairy, and farm products."',
             'keywords'  => 'Farmbuddy',
             'google_analytics' => '',
             'phone'  => '+94 77 123 4567',
@@ -26,7 +26,7 @@ class SettingTableSeeder extends Seeder
             'address' => 'Clock Tower, Vavuniya, SL',
             'favicon' => 'favicon.jpg',
             'logo'  => 'logo.png',
-            'about' => 'We are a friendly bar serving a variety of cocktails, wines and beers.',
+            'about' => '"We are a user-friendly platform connecting farmers directly with consumers, offering a variety of fresh produce, dairy, and farm products."',
             'facebook' => '',
             'twitter'  => '',
             'user_id'  => '1',
