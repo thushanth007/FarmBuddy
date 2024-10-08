@@ -13,6 +13,16 @@ class CartController extends Controller
     // Add product to cart
     public function addToCart(Request $request, $id)
     {
+        // $qty = $request->qty;
+        // $product = Product::find($id);
+
+        // $request->validate([
+        //     'qty' => ['required', 'numeric', 'min:1', 'max:' . $product->stock],
+        // ]);
+
+        // Cart::add($product->id, $product->name, $product->price, $qty,  ['unit' => $product->unit, 'image' => $product->image_1, 'offer' => $product->offer, 'farmer_id' => $product->admin_id]);
+
+        // return redirect()->back()->with('success', 'Product added to cart!');
         $qty = $request->qty;
         $product = Product::find($id);
 
@@ -20,7 +30,29 @@ class CartController extends Controller
             'qty' => ['required', 'numeric', 'min:1', 'max:' . $product->stock],
         ]);
 
-        Cart::add($product->id, $product->name, $product->price, $qty,  ['unit' => $product->unit, 'image' => $product->image_1, 'offer' => $product->offer, 'farmer_id' => $product->admin_id]);
+        // Check if there are items in the cart
+        $cartItems = Cart::getContent();
+
+        // If the cart is not empty, check if all items are from the same farm
+        if ($cartItems->count() > 0) {
+            // Get the farmer_id of the first item in the cart
+            $firstItem = $cartItems->first();
+            $firstItemFarmerId = $firstItem->attributes['farmer_id'];
+
+            // Compare with the current product's farmer_id
+            if ($firstItemFarmerId != $product->admin_id) {
+                // If different, return an error message and don't add the product to the cart
+                return redirect()->back()->with('error', 'You can only add products from one farm at a time.');
+            }
+        }
+
+        // If all checks pass, add the product to the cart
+        Cart::add($product->id, $product->name, $product->price, $qty,  [
+            'unit' => $product->unit,
+            'image' => $product->image_1,
+            'offer' => $product->offer,
+            'farmer_id' => $product->admin_id
+        ]);
 
         return redirect()->back()->with('success', 'Product added to cart!');
     }
@@ -34,7 +66,7 @@ class CartController extends Controller
         foreach ($cartItems as $item) {
             // Check if the item has an 'offer' attribute
             $offer = isset($item->attributes['offer']) && !empty($item->attributes['offer']) ? $item->attributes['offer'] : null;
-            
+
             // Calculate the price after applying the offer (if available)
             if ($offer) {
                 // Calculate the discount (assuming 'offer' is a percentage discount)
@@ -47,7 +79,7 @@ class CartController extends Controller
             // Calculate total for this item (price * quantity)
             $totalAmount += $discountedPrice * $item->quantity;
         }
-        
+
         return view('site.cart.show', compact('cartItems', 'totalAmount'));
     }
 
@@ -62,7 +94,7 @@ class CartController extends Controller
             'qty' => ['required', 'numeric', 'min:1', 'max:' . $product->stock],
         ]);
 
-        if($item->quantity > 0) {
+        if ($item->quantity > 0) {
             Cart::update($id, ['quantity' => $qty]);
         }
 
@@ -84,7 +116,7 @@ class CartController extends Controller
 
         // Adding product to the 'wishlist' instance of the cart
         Cart::session('wishlist')->add($product->id, $product->name, $product->price, 1, ['unit' => $product->unit, 'image' => $product->image_1, 'offer' => $product->offer]);
- 
+
         return redirect()->back()->with('success', 'Product added to wishlist successfully!');
     }
 
@@ -104,4 +136,3 @@ class CartController extends Controller
         return redirect()->back()->with('success', 'Item removed from wishlist!');
     }
 }
-
