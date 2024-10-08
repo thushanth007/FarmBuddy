@@ -63,35 +63,36 @@ class AdminLoginController extends Controller
 
     public function showLoginForm()
     {
-         // If an admin is already logged in, redirect them to their respective dashboard
-    if (Auth::guard('admin')->check()) {
-        $user = Auth::guard('admin')->user();
+        // If an admin is already logged in, redirect them to their respective dashboard
+        if (Auth::guard('admin')->check()) {
+            $user = Auth::guard('admin')->user();
 
-        // Redirect based on the user_type
-        if ($user->user_type == 'seller') {
-            return redirect('/admin/seller-dashboard');
-        } elseif ($user->user_type == 'driver') {
-            return redirect('/admin/driver-dashboard');
-        } else {
-            return redirect('/admin/dashboard'); // Default admin dashboard
+            // Redirect based on the user_type
+            if ($user->user_type == 'seller') {
+                return redirect('/admin/seller-dashboard');
+            } elseif ($user->user_type == 'driver') {
+                return redirect('/admin/driver-dashboard');
+            } else {
+                return redirect('/admin/dashboard'); // Default admin dashboard
+            }
         }
-    }
 
-    // If a user is logged in as a regular user, log them out
-    if (Auth::guard('web')->check()) {
-        Auth::guard('web')->logout();
-        session()->invalidate();  // Invalidate user session
-        session()->regenerateToken();  // Regenerate CSRF token
-    }
+        // If a user is logged in as a regular user, log them out
+        // if (Auth::guard('web')->check()) {
+        //     Auth::guard('web')->logout();
+        //     session()->invalidate();  // Invalidate user session
+        //     session()->regenerateToken();  // Regenerate CSRF token
+        // }
 
-    // Show the admin login form to guests
-    return view('auth.admin-login');
+        // Show the admin login form to guests
+        return view('auth.admin-login');
     }
 
     /**
      * @return mixed
      */
-    protected function guard(){
+    protected function guard()
+    {
         return Auth::guard('admin');
     }
 

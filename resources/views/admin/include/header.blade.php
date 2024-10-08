@@ -1,6 +1,6 @@
 <header class="main-header">
     <!-- Logo -->
-    <a href="{{url('/admin')}}" class="logo">
+    <a href="javascript:void(0);" class="logo">
         <span class="logo-mini"><b>F</b>B</span>
         <span class="logo-lg"><b>{{ $option->name }}</b></span>
     </a>
